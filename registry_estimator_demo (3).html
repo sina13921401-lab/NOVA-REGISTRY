@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>محاسبه‌گر هزینه رجیستری</title>
+<style>
+:root{--navy:#12345a;--blue:#1769aa;--bg:#f3f6fa;--ink:#172b43;--muted:#64748b;--line:#dce5ef;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:var(--ink);line-height:1.8}
+header{background:linear-gradient(120deg,#102d50,#1769aa);color:white;padding:22px 16px}
+.wrap{max-width:900px;margin:auto;padding:0 16px}
+.brand{font-size:20px;font-weight:700}.sub{font-size:13px;opacity:.9}
+.notice{background:#fff8e8;border:1px solid #f0d69a;color:#694d12;border-radius:12px;padding:12px 14px;margin:18px auto;font-size:13px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+nav button,.btn{border:0;border-radius:10px;padding:11px 16px;background:var(--blue);color:white;font-weight:700;cursor:pointer}
+nav button.secondary{background:#e5edf6;color:var(--navy)}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 5px 18px #183b5b0a}
+h1{font-size:22px;margin:4px 0 12px}h2{font-size:18px;margin:0 0 12px}
+label{display:block;font-weight:700;margin:12px 0 6px}
+select,input{width:100%;padding:12px;border:1px solid #cbd7e4;border-radius:10px;background:white;font:inherit;color:var(--ink)}
+.price{font-size:26px;font-weight:800;color:var(--blue);margin:12px 0}
+.small{font-size:12px;color:var(--muted)}
+.hidden{display:none}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.result{background:#edf6ff;border:1px solid #c9e2f8;padding:14px;border-radius:12px;margin-top:14px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 10px}
+@media(max-width:600px){.row{grid-template-columns:1fr}.card{padding:16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">سامانه مستقل محاسبه‌گر رجیستری</div><div class="sub">برآورد هزینه بر اساس تعرفه‌های واردشده توسط مدیر سایت</div></div></header>
+<main class="wrap">
+<div class="notice"><b>توجه:</b> این وب‌سایت مستقل و غیررسمی است و وابستگی‌ای به سامانه همتا یا نهاد دولتی ندارد. مبالغ صرفاً ارقام واردشده برای برآورد هستند؛ پیش از هر پرداخت، تعرفه و مسیر پرداخت را از مرجع رسمی بررسی کنید. این نسخه هیچ شماره تلفن، رمز، کد تأیید یا اطلاعات حسابی دریافت یا ارسال نمی‌کند.</div>
+<nav>
+<button id="phoneTab">ثبت / برآورد تلفن همراه</button>
+<button class="secondary" id="instagramTab">اینستاگرام</button>
+</nav>
+<section class="card" id="phonePanel">
+<h1>برآورد هزینه رجیستری تلفن همراه</h1>
+<p class="small">مدل دستگاه را انتخاب کنید تا مبلغ ثبت‌شده برای آن نمایش داده شود.</p>
+<label for="model">مدل دستگاه</label>
+<select id="model"><option value="">انتخاب مدل آیفون</option></select>
+<div id="feeBox" class="result hidden">
+<div class="small">مبلغ برآوردی</div><div class="price" id="fee">—</div>
+<div class="small">این مبلغ تضمین‌کننده هزینه نهایی یا تأیید رجیستری نیست.</div>
+</div>
+<div id="seBox" class="result hidden">این محصول حذف شده است.</div>
+<div class="small" style="margin-top:14px">برای استعلام رسمی وضعیت دستگاه و پرداخت، فقط از درگاه‌ها و وب‌سایت‌های رسمی و قابل‌راستی‌آزمایی استفاده کنید.</div>
+</section>
+<section class="card hidden" id="instagramPanel">
+<h1>بخش اینستاگرام</h1>
+<p>این بخش در این نسخه صرفاً جایگاه نمایشی دارد. برای حفظ امنیت، رمز عبور، کد ورود یا کد یک‌بارمصرف اینستاگرام را در این سایت وارد نکنید.</p>
+</section>
+<section class="card">
+<h2>تعرفه‌های فعلی</h2>
+<div class="small">واحد مبلغ همان «ندیان» است که در مشخصات اولیه نوشته شده؛ در صورت اشتباه بودن نام واحد، باید اصلاح شود.</div>
+<div id="feeList"></div>
+</section>
+</main>
+<footer>نسخه نمایشی مستقل • بدون اتصال به پرداخت یا سامانه رسمی</footer>
+<script>
+const groups = [
+["iPhone 8 تا iPhone 11 (مدل‌های عادی)",560],
+["iPhone 11 Pro",583],
+["iPhone 11 Pro Max تا iPhone 12 (مدل عادی)",599],
+["iPhone 12 Pro",509],
+["iPhone 12 Pro Max تا iPhone 13 (مدل عادی)",540],
+["iPhone 12 mini و iPhone 13 mini",320],
+["iPhone 13 Pro",569],
+["iPhone 13 Pro Max، iPhone 14، 14 Plus و 14 Pro",650],
+["iPhone 14 Pro Max",699],
+["iPhone 15 و iPhone 15 Pro",788],
+["iPhone 15 Pro Max و iPhone 16 (مدل عادی)",880],
+["iPhone 16 Pro، iPhone 16 Pro Max و iPhone 17 (مدل عادی)",999],
+["iPhone 17 Pro",1199],
+["iPhone 17 Pro Max",1599],
+["iPhone 18 Pro",2200],
+["iPhone 18 Pro Max",2790],
+["iPhone Duo",5800]
+];
+const model=document.getElementById('model');
+groups.forEach((g,i)=>{let o=document.createElement('option');o.value=i;o.textContent=g[0];model.appendChild(o)});
+let se=document.createElement('option');se.value='se';se.textContent='iPhone SE';model.appendChild(se);
+model.addEventListener('change',()=>{
+ const feeBox=document.getElementById('feeBox'),seBox=document.getElementById('seBox');
+ feeBox.classList.add('hidden');seBox.classList.add('hidden');
+ if(model.value==='se'){seBox.classList.remove('hidden');return}
+ if(model.value!==''){document.getElementById('fee').textContent=groups[Number(model.value)][1].toLocaleString('fa-IR')+' ندیان';feeBox.classList.remove('hidden')}
+});
+document.getElementById('feeList').innerHTML=groups.map(g=>`<div style="display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #edf1f5;padding:7px 0"><span>${g[0]}</span><b>${g[1].toLocaleString('fa-IR')}</b></div>`).join('');
+document.getElementById('phoneTab').onclick=()=>{document.getElementById('phonePanel').classList.remove('hidden');document.getElementById('instagramPanel').classList.add('hidden')};
+document.getElementById('instagramTab').onclick=()=>{document.getElementById('instagramPanel').classList.remove('hidden');document.getElementById('phonePanel').classList.add('hidden')};
+</script>
+</body></html>
